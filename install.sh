@@ -8,6 +8,6 @@ update-rc.d ddns53 defaults
 
 [ ! -d /etc/ddns53 ] && mkdir /etc/ddns53
 curl -sSL https://github.com/hydra1983/ddns53/raw/master/etc/ddns53/ddns53.conf > /etc/ddns53/ddns53.conf
-vi /etc/ddns53/ddns53.conf
+vi /etc/ddns53/ddns53.conf < /dev/tty
 
 /etc/init.d/ddns53 start
