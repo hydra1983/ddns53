@@ -8,68 +8,18 @@
 # Short-Description: Register host to AWS Route53.
 ### END INIT INFO
 
-########################################
-#
-#   Registers EC2 to Route 53
-#
-#   Requisition:
-#       python-boto
-#           https://github.com/boto/boto#installation
-#       dig
-#       awk
-#       sed
-#       grep
-#       curl
-#       cut
-#
-#   Install:
-#       sudo apt-get update
-#       sudo apt-get install python-pip sed curl
-#       sudo pip install boto --upgrade
-#       wget -O - https://gist.githubusercontent.com/hydra1983/5983758/raw/c4763017c53924b9421dfbbcef4615116ae156d0/ddns53 > ddns53 && sudo mv ddns53 /etc/init.d/
-#
-#       # Replace the values with your own
-#       DDNS53_HOST_NAME=your host name
-#       DDNS53_DOMAIN_NAME=your domain name
-#       DDNS53_AWS_ACCESS_KEY_ID=your aws access key id
-#       DDNS53_AWS_SECRET_ACCESS_KEY=your aws secret access key
-#
-#       cat /etc/init.d/ddns53 | sed "s/^HOSTNAME=.*/HOSTNAME=$DDNS53_HOST_NAME/" | sed "s/^DOMAIN=.*/DOMAIN=$DDNS53_DOMAIN_NAME/" | sed "s/^AWS_ACCESS_KEY_ID=.*/AWS_ACCESS_KEY_ID=$DDNS53_AWS_ACCESS_KEY_ID/" | sed "s/^AWS_SECRET_ACCESS_KEY=.*/AWS_SECRET_ACCESS_KEY=$DDNS53_AWS_SECRET_ACCESS_KEY/" | sudo tee /etc/init.d/ddns53 1>/dev/null
-#       sudo chmod +x /etc/init.d/ddns53
-#       cd /etc/init.d
-#       sudo update-rc.d ddns53 defaults
-#       sudo /etc/init.d/ddns53 start
-#
-#   Usage:
-#       /etc/init.d/ddns53 start
-#       /etc/init.d/ddns53 stop
-#
-#   References:
-#       Adding EC2 instances to Route53
-#           http://blog.ianbeyer.com/2012/09/11/adding-ec2-to-route53/
-#       利用 Route 53 設定 Ec2 動態 DNS
-#           http://blog.hsatac.net/2012/06/aws-ec2-setup-dynamic-dns-using-route-53/
-#
-#   Author:
-#       Edison Guo
-#           http://blog.hydra1983.com
-########################################
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
-HOSTNAME=<hostname>
-DOMAIN=<domainname>
-NEW_TTL=300
-
-AWS_ACCESS_KEY_ID=<access key id>
-AWS_SECRET_ACCESS_KEY=<secret access key>
-
-IP_CHECK_URL="http://169.254.169.254/latest/meta-data/public-hostname"
-DNS_SERVER=8.8.8.8
-
-###############################################################
-# You should not need to change anything beyond this point
-###############################################################
 export PATH=$PATH
+
+CONF=/etc/ddns53/ddns53.conf
+
+if [[ -f $CONF ]] ; then
+    source $CONF
+else
+    echo "$CONF is missing"
+    exit 1
+fi
 
 AUTH_SERVER=$(dig NS @$DNS_SERVER $DOMAIN | grep -v ';' | grep -m 1 awsdns | grep $DOMAIN | awk '{print $(NF)}')
 if [ "$AUTH_SERVER" = ""  ]; then
