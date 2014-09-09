@@ -13,6 +13,6 @@ update-rc.d ddns53 defaults
 curl -sSL https://github.com/hydra1983/ddns53/raw/master/etc/ddns53/ddns53.conf > /etc/ddns53/ddns53.conf
 vi /etc/ddns53/ddns53.conf < /dev/tty
 
-# sync time before start ddns53
+# Sync time before start ddns53
 ntpdate ntp.ubuntu.com
 /etc/init.d/ddns53 start
